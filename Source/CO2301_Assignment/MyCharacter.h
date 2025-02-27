@@ -3,20 +3,28 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Gun.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Character.h"
 #include "MyCharacter.generated.h"
 
+class AGun;
+
 UCLASS()
-class MYPROJECT_API AMyCharacter : public ACharacter
+class CO2301_ASSIGNMENT_API AMyCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	AMyCharacter();
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AGun> GunClass;
+
+	AGun* Gun;
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,10 +40,6 @@ public:
 private:
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* CharMesh;
-	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* GunMesh;
-	UPROPERTY(VisibleAnywhere)
-	USceneComponent* BulletSpawnPoint;
 
 	float DeltaLocation = 0;
 	float DeltaLocationZ = 0;

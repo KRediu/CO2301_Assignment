@@ -2,13 +2,13 @@
 
 using UnrealBuildTool;
 
-public class MyProject : ModuleRules
+public class CO2301_Assignment : ModuleRules
 {
-	public MyProject(ReadOnlyTargetRules Target) : base(Target)
+	public CO2301_Assignment(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "GameplayTasks", "UMG", "NavigationSystem" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AIModule", "GameplayTasks", "UMG", "NavigationSystem" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

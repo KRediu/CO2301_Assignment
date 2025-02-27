@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class MYPROJECT_API AEnemyAIController : public AAIController
+class CO2301_ASSIGNMENT_API AEnemyAIController : public AAIController
 {
 	GENERATED_BODY()
 

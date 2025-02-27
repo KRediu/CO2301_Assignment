@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Gun.generated.h"
+#include "Bullet.generated.h"
 
 UCLASS()
-class MYPROJECT_API AGun : public AActor
+class CO2301_ASSIGNMENT_API ABullet : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AGun();
+	ABullet();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,9 +23,4 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-private:
-	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* GunMesh;
-	UPROPERTY(VisibleAnywhere)
-	USceneComponent* BulletSpawnPoint;
 };

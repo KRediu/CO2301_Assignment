@@ -8,7 +8,7 @@
 #include "EnemyCharacter.generated.h"
 
 UCLASS()
-class MYPROJECT_API AEnemyCharacter : public ACharacter
+class CO2301_ASSIGNMENT_API AEnemyCharacter : public ACharacter
 {
 	GENERATED_BODY()
 

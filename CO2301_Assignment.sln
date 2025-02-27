@@ -7,9 +7,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{233774
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Games", "Games", "{DE1F8B53-6C02-3C13-9101-A7C8D96F3FF6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UE5", "Intermediate\ProjectFiles\UE5.vcxproj", "{4FC50D58-15AB-34D5-9558-08545A1F3DED}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UE5", "Intermediate\ProjectFiles\UE5.vcxproj", "{2B8ED57E-8D1F-3440-AF93-B5DDC1CC3E9F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyProject", "Intermediate\ProjectFiles\MyProject.vcxproj", "{04038539-4292-3D5C-9CF4-A5CCA1D00AA1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CO2301_Assignment", "Intermediate\ProjectFiles\CO2301_Assignment.vcxproj", "{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Visualizers", "Visualizers", "{1CCEC849-CC72-4C59-8C36-2F7C38706D4C}"
 	ProjectSection(SolutionItems) = preProject
@@ -19,37 +19,25 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		DebugGame Editor|Win64 = DebugGame Editor|Win64
-		DebugGame|Win64 = DebugGame|Win64
 		Development Editor|Win64 = Development Editor|Win64
-		Development|Win64 = Development|Win64
-		Shipping|Win64 = Shipping|Win64
 	EndGlobalSection
 	# UnrealVS Section
 	GlobalSection(ddbf523f-7eb6-4887-bd51-85a714ff87eb) = preSolution
 		AvailablePlatforms=Win64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4FC50D58-15AB-34D5-9558-08545A1F3DED}.DebugGame Editor|Win64.ActiveCfg = BuiltWithUnrealBuildTool|Win64
-		{4FC50D58-15AB-34D5-9558-08545A1F3DED}.DebugGame|Win64.ActiveCfg = BuiltWithUnrealBuildTool|Win64
-		{4FC50D58-15AB-34D5-9558-08545A1F3DED}.Development Editor|Win64.ActiveCfg = BuiltWithUnrealBuildTool|Win64
-		{4FC50D58-15AB-34D5-9558-08545A1F3DED}.Development|Win64.ActiveCfg = BuiltWithUnrealBuildTool|Win64
-		{4FC50D58-15AB-34D5-9558-08545A1F3DED}.Shipping|Win64.ActiveCfg = BuiltWithUnrealBuildTool|Win64
-		{04038539-4292-3D5C-9CF4-A5CCA1D00AA1}.DebugGame Editor|Win64.ActiveCfg = DebugGame_Editor|x64
-		{04038539-4292-3D5C-9CF4-A5CCA1D00AA1}.DebugGame Editor|Win64.Build.0 = DebugGame_Editor|x64
-		{04038539-4292-3D5C-9CF4-A5CCA1D00AA1}.DebugGame|Win64.ActiveCfg = DebugGame|x64
-		{04038539-4292-3D5C-9CF4-A5CCA1D00AA1}.DebugGame|Win64.Build.0 = DebugGame|x64
-		{04038539-4292-3D5C-9CF4-A5CCA1D00AA1}.Development Editor|Win64.ActiveCfg = Development_Editor|x64
-		{04038539-4292-3D5C-9CF4-A5CCA1D00AA1}.Development Editor|Win64.Build.0 = Development_Editor|x64
-		{04038539-4292-3D5C-9CF4-A5CCA1D00AA1}.Development|Win64.ActiveCfg = Development|x64
-		{04038539-4292-3D5C-9CF4-A5CCA1D00AA1}.Development|Win64.Build.0 = Development|x64
-		{04038539-4292-3D5C-9CF4-A5CCA1D00AA1}.Shipping|Win64.ActiveCfg = Shipping|x64
-		{04038539-4292-3D5C-9CF4-A5CCA1D00AA1}.Shipping|Win64.Build.0 = Shipping|x64
+		{2B8ED57E-8D1F-3440-AF93-B5DDC1CC3E9F}.DebugGame Editor|Win64.ActiveCfg = BuiltWithUnrealBuildTool|Win64
+		{2B8ED57E-8D1F-3440-AF93-B5DDC1CC3E9F}.Development Editor|Win64.ActiveCfg = BuiltWithUnrealBuildTool|Win64
+		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.DebugGame Editor|Win64.ActiveCfg = DebugGame_Editor|x64
+		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.DebugGame Editor|Win64.Build.0 = DebugGame_Editor|x64
+		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.Development Editor|Win64.ActiveCfg = Development_Editor|x64
+		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.Development Editor|Win64.Build.0 = Development_Editor|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{4FC50D58-15AB-34D5-9558-08545A1F3DED} = {233774A8-CC9D-3FA9-86D1-90573E92B704}
-		{04038539-4292-3D5C-9CF4-A5CCA1D00AA1} = {DE1F8B53-6C02-3C13-9101-A7C8D96F3FF6}
+		{2B8ED57E-8D1F-3440-AF93-B5DDC1CC3E9F} = {233774A8-CC9D-3FA9-86D1-90573E92B704}
+		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE} = {DE1F8B53-6C02-3C13-9101-A7C8D96F3FF6}
 	EndGlobalSection
 EndGlobal

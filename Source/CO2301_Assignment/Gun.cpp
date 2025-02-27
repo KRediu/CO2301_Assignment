@@ -1,8 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "MyCharacter.h"
-#include "MyCharacter.cpp"
 #include "Gun.h"
+#include "MyCharacter.h"
 
 // Sets default values
 AGun::AGun()
@@ -11,6 +10,9 @@ AGun::AGun()
 	PrimaryActorTick.bCanEverTick = true;
 	GunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gun Attachment"));
 	GunMesh->SetupAttachment(RootComponent);
+
+	SetActorScale3D(FVector(0.8f, 0.8f, 0.8f));
+
 
 	BulletSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Bullet"));
 	BulletSpawnPoint->SetupAttachment(GunMesh);
@@ -30,3 +32,11 @@ void AGun::Tick(float DeltaTime)
 
 }
 
+void AGun::AttachToCharacter(AMyCharacter* Character)
+{
+	if (Character && Character->GetMesh())
+	{
+		FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, true);
+		AttachToComponent(Character->GetMesh(), AttachRules, TEXT("gun_socket"));
+	}
+}

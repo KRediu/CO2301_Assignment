@@ -29,12 +29,6 @@ AMyCharacter::AMyCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 
-	GunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gun Attachment"));
-	GunMesh->SetupAttachment(CharMesh, "gun_socket");
-
-	BulletSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Bullet"));
-	BulletSpawnPoint->SetupAttachment(GunMesh);
-
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
 
@@ -48,6 +42,12 @@ void AMyCharacter::BeginPlay()
 	{
 		PlayerController->PlayerCameraManager->ViewPitchMin = -40.0f; // Look down limit
 		PlayerController->PlayerCameraManager->ViewPitchMax = 40.0f;  // Look up limit
+	}
+
+	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
+	if (Gun) {
+		Gun->AttachToCharacter(this);
+		Gun->SetActorEnableCollision(false);
 	}
 }
 

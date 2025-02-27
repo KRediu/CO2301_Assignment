@@ -3,13 +3,13 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class MyProjectEditorTarget : TargetRules
+public class CO2301_AssignmentTarget : TargetRules
 {
-	public MyProjectEditorTarget( TargetInfo Target) : base(Target)
+	public CO2301_AssignmentTarget( TargetInfo Target) : base(Target)
 	{
-		Type = TargetType.Editor;
+		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_1;
-		ExtraModuleNames.Add("MyProject");
+		ExtraModuleNames.Add("CO2301_Assignment");
 	}
 }

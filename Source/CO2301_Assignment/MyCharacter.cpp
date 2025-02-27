@@ -13,7 +13,7 @@ AMyCharacter::AMyCharacter()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraAttachmentArm"));
 	SpringArm->SetupAttachment(CharMesh);
-	SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+	SpringArm->SetRelativeLocation(FVector(0.0f, 90.0f, 40.0f));
 	SpringArm->SetRelativeRotation(FRotator(0.f, 0.f, 0.f));
 	SpringArm->TargetArmLength = 150.0f;
 	SpringArm->bUsePawnControlRotation = true;

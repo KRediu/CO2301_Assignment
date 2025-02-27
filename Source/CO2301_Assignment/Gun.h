@@ -7,6 +7,7 @@
 #include "Gun.generated.h"
 
 class AMyCharacter;
+class AEnemyCharacter;
 
 UCLASS()
 class CO2301_ASSIGNMENT_API AGun : public AActor
@@ -21,6 +22,7 @@ public:
 	UStaticMeshComponent* GunMesh;
 
 	void AttachToCharacter(AMyCharacter* MyCharacter);
+	void AttachToEnemy(AEnemyCharacter* EnemyCharacter);
 
 protected:
 	// Called when the game starts or when spawned

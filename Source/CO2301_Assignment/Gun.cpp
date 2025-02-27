@@ -2,6 +2,7 @@
 
 #include "Gun.h"
 #include "MyCharacter.h"
+#include "EnemyCharacter.h"
 
 // Sets default values
 AGun::AGun()
@@ -11,11 +12,9 @@ AGun::AGun()
 	GunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gun Attachment"));
 	GunMesh->SetupAttachment(RootComponent);
 
-	SetActorScale3D(FVector(0.8f, 0.8f, 0.8f));
-
-
 	BulletSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Bullet"));
 	BulletSpawnPoint->SetupAttachment(GunMesh);
+	BulletSpawnPoint->SetRelativeLocation(FVector(0.0f, 60.0f, 14.0f));
 }
 
 // Called when the game starts or when spawned
@@ -38,5 +37,14 @@ void AGun::AttachToCharacter(AMyCharacter* Character)
 	{
 		FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, true);
 		AttachToComponent(Character->GetMesh(), AttachRules, TEXT("gun_socket"));
+	}
+}
+
+void AGun::AttachToEnemy(AEnemyCharacter* EnemyCharacter)
+{
+	if (EnemyCharacter && EnemyCharacter->GetMesh())
+	{
+		FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, true);
+		AttachToComponent(EnemyCharacter->GetMesh(), AttachRules, TEXT("gun_socket"));
 	}
 }

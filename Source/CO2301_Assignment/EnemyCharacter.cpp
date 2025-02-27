@@ -17,6 +17,11 @@ void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
+	if (Gun) {
+		Gun->AttachToEnemy(this);
+		Gun->SetActorEnableCollision(false);
+	}
 }
 
 // Called every frame

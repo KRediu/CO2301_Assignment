@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Gun.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "EnemyCharacter.generated.h"
 
 class AGun;
+class ABullet;
 
 UCLASS()
 class CO2301_ASSIGNMENT_API AEnemyCharacter : public ACharacter
@@ -21,8 +21,14 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AGun> GunClass;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ABullet> BulletClass;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool IsDead = false;
 
 	AGun* Gun;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,12 +38,24 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 private:
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* EnemyMesh;
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* EnemyGunMesh;
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* EnemyBulletSpawnPoint;
+
+	UPROPERTY(EditAnywhere)
+	float Health = 100.0f;
+
+	FTimerHandle DespawnTimer;
+
+	void Fire();
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+		AController* EventInstigator, AActor* DamageCauser) override;
+	
+	void Death();
+	void Despawn();
 };

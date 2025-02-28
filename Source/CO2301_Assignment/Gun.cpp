@@ -11,10 +11,6 @@ AGun::AGun()
 	PrimaryActorTick.bCanEverTick = true;
 	GunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gun Attachment"));
 	GunMesh->SetupAttachment(RootComponent);
-
-	BulletSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Bullet"));
-	BulletSpawnPoint->SetupAttachment(GunMesh);
-	BulletSpawnPoint->SetRelativeLocation(FVector(0.0f, 60.0f, 14.0f));
 }
 
 // Called when the game starts or when spawned

@@ -2,55 +2,83 @@
 
 
 #include "Bullet.h"
-#include "EnemyCharacter.h"
-#include "MyCharacter.h"
 
 // Sets default values
 ABullet::ABullet()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bullet Mesh"));
 	BulletMesh->SetupAttachment(RootComponent);
-	BulletMesh->SetSimulatePhysics(true);
+    
+    BulletMesh->SetSimulatePhysics(false); // Disable physics simulation - prevents bouncing and phasing through walls
 	BulletMesh->SetNotifyRigidBodyCollision(true);
+    BulletMesh->BodyInstance.bNotifyRigidBodyCollision = true;
+    BulletMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    BulletMesh->SetCollisionResponseToAllChannels(ECR_Block); // Blocks all collisions
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Component"));
 	ProjectileMovement->MaxSpeed = MovementSpeed;
 	ProjectileMovement->InitialSpeed = MovementSpeed;
-	InitialLifeSpan = 10.0f;
+    ProjectileMovement->ProjectileGravityScale = 0.0f;
+	InitialLifeSpan = 1.5f;
 
 }
+
 
 // Called when the game starts or when spawned
 void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
 	
-}
-
-// Called every frame
-void ABullet::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+	OnActorHit.AddDynamic(this, &ABullet::OnHit);
 }
 
 void ABullet::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse,
 	const FHitResult& Hit) {
-	if (OtherActor->GetClass()->IsChildOf(AMyCharacter::StaticClass()) || OtherActor->GetClass()->IsChildOf(AEnemyCharacter::StaticClass())) {
-		UE_LOG(LogTemp, Warning, TEXT("OnMyActorHit worked!"));
-		AActor* ProjectileOwner = GetOwner();
-		if (ProjectileOwner == NULL) {
-			return;
-		}
-		UGameplayStatics::ApplyDamage(
-			OtherActor, //actor that will be damaged
-			10.0f, //the base damage to apply
-			ProjectileOwner->GetInstigatorController(), //controller that caused the damage
-			this, //Actor that actually caused the damage
-			UDamageType::StaticClass() //class that describes the damage that was done
-		);
-		Destroy();
-	}
+    if (!OtherActor || OtherActor == this) return;
+
+    UE_LOG(LogTemp, Warning, TEXT("Bullet hit: %s"), *OtherActor->GetName());
+
+    AActor* ProjectileOwner = GetOwner();
+    if (!ProjectileOwner) return;
+
+    // Apply standard damage to all actors that support it
+    UGameplayStatics::ApplyDamage(
+        OtherActor,
+        10.0f,
+        ProjectileOwner->GetInstigatorController(),
+        this,
+        UDamageType::StaticClass()
+    );
+
+    // Check if the hit actor has a destructible component
+    //if (UGeometryCollectionComponent* ChaosComponent = OtherActor->FindComponentByClass<UGeometryCollectionComponent>()) {
+    //    FVector HitLocation = Hit.ImpactPoint;
+    //    FVector HitDirection = Hit.ImpactNormal;
+
+    //    // Apply a radial impulse to break Chaos destructible meshes
+    //    ChaosComponent->AddRadialImpulse(HitLocation, 500.0f, 1000.0f, ERadialImpulseFalloff::RIF_Linear, true);
+
+    //    UE_LOG(LogTemp, Warning, TEXT("Chaos destructible mesh hit!"));
+    //}
+
+    //if (OtherActor->IsA(AStaticMeshActor::StaticClass())) {
+    //    // Destroy the mesh actor (it'll die immediately on hit)
+    //    OtherActor->Destroy();
+    //    UE_LOG(LogTemp, Warning, TEXT("Mesh destroyed!"));
+    //}
+
+    // Destroy the bullet after hit
+    Destroy();
+}
+
+void ABullet::OwnerCollisionPrevention()
+{
+    AActor* Shooter = GetOwner();
+    if (Shooter) {
+        if (BulletMesh) {
+            // Ignore collisions with the actor that shot the bullet
+            BulletMesh->IgnoreActorWhenMoving(Shooter, true);
+        }
+    }
 }

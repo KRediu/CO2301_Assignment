@@ -2,6 +2,8 @@
 
 
 #include "EnemyCharacter.h"
+#include "Bullet.h"
+#include "Gun.h"
 
 // Sets default values
 AEnemyCharacter::AEnemyCharacter()
@@ -10,6 +12,10 @@ AEnemyCharacter::AEnemyCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	EnemyMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Enemy Character Mesh"));
 	EnemyMesh->SetupAttachment(RootComponent);
+
+	EnemyBulletSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Bullet"));
+	EnemyBulletSpawnPoint->SetupAttachment(EnemyMesh);
+	EnemyBulletSpawnPoint->SetRelativeLocation(FVector(60.0f, 20.0f, 24.0f));
 }
 
 // Called when the game starts or when spawned
@@ -31,10 +37,46 @@ void AEnemyCharacter::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
-void AEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+void AEnemyCharacter::Fire() {
+	if (BulletClass && !IsDead) { //checks bullet projectile has been set in the editor
+		FVector SpawnLocation = EnemyBulletSpawnPoint->GetComponentLocation();
+		FRotator SpawnRotation = EnemyBulletSpawnPoint->GetComponentRotation();
+		ABullet* TempEnemyBullet = GetWorld()->SpawnActor<ABullet>(BulletClass, SpawnLocation, SpawnRotation);
 
+		TempEnemyBullet->SetOwner(this);
+		TempEnemyBullet->OwnerCollisionPrevention();
+		TempEnemyBullet->SetActorRelativeScale3D(FVector(0.075f, 0.075f, 0.075f));
+
+		/*UGameplayStatics::PlaySound2D(GetWorld(), thunk);*/
+	}
 }
 
+float AEnemyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	AController* EventInstigator, AActor* DamageCauser)
+{
+	if (!IsDead) {
+		UE_LOG(LogTemp, Warning, TEXT("Damage to enemy: %f"), DamageAmount);
+
+		Health -= DamageAmount;
+		if (Health <= 0)
+			AEnemyCharacter::Death();
+
+		return DamageAmount;
+	}
+	return 0;
+}
+
+void AEnemyCharacter::Death() 
+{
+	UE_LOG(LogTemp, Warning, TEXT("Enemy slain"));
+	IsDead = true;
+	GetWorld()->GetTimerManager().SetTimer(DespawnTimer, this, &AEnemyCharacter::Despawn, 15.0f);
+}
+
+void AEnemyCharacter::Despawn()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Enemy despawned"));
+	EnemyMesh->SetAnimInstanceClass(nullptr);
+	Destroy();
+	Gun->Destroy();
+}

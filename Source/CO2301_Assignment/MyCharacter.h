@@ -3,14 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Gun.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/CameraComponent.h"
+#include "Animation/AnimMontage.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Character.h"
 #include "MyCharacter.generated.h"
 
 class AGun;
+class ABullet;
 
 UCLASS()
 class CO2301_ASSIGNMENT_API AMyCharacter : public ACharacter
@@ -23,6 +24,19 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AGun> GunClass;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ABullet> BulletClass;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool IsDead = false;
+	UPROPERTY(BlueprintReadOnly)
+	bool IsReloading = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Health = 100.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int InitialAmmo = 30;
+	UPROPERTY(BlueprintReadOnly)
+	int Ammo = InitialAmmo;
 
 	AGun* Gun;
 
@@ -40,6 +54,12 @@ public:
 private:
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* CharMesh;
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* BulletSpawnPoint;
+	UPROPERTY(EditAnywhere)
+	UCameraComponent* Camera;
+	UPROPERTY(EditAnywhere)
+	USpringArmComponent* SpringArm;
 
 	float DeltaLocation = 0;
 	float DeltaLocationZ = 0;
@@ -53,13 +73,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	float StrafeSpeed = 50.0f;
 
-
-	UPROPERTY(EditAnywhere)
-	UCameraComponent* Camera;
-	UPROPERTY(EditAnywhere)
-	USpringArmComponent* SpringArm;
+	bool IsJumping = false;
 
 	FTimerHandle JumpCooldown;
+	FTimerHandle ReloadTimer;
+	FTimerHandle DespawnTimer;
 
 	void SetMoveAmount(float Value);
 	void SetRotateAmount(float Value);
@@ -67,4 +85,14 @@ private:
 	void SetStrafeAmount(float Value);
 	void Jump();
 	void JumpReset();
+
+	void Fire();
+	void Reload();
+	void ReloadReset();
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+		AController* EventInstigator, AActor* DamageCauser) override;
+
+	void Death();
+	void Despawn();
 };

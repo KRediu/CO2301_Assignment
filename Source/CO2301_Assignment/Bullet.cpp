@@ -12,7 +12,6 @@ ABullet::ABullet()
     
     BulletMesh->SetSimulatePhysics(false); // Disable physics simulation - prevents bouncing and phasing through walls
 	BulletMesh->SetNotifyRigidBodyCollision(true);
-    BulletMesh->BodyInstance.bNotifyRigidBodyCollision = true;
     BulletMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     BulletMesh->SetCollisionResponseToAllChannels(ECR_Block); // Blocks all collisions
 
@@ -36,8 +35,6 @@ void ABullet::BeginPlay()
 void ABullet::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse,
 	const FHitResult& Hit) {
     if (!OtherActor || OtherActor == this) return;
-
-    UE_LOG(LogTemp, Warning, TEXT("Bullet hit: %s"), *OtherActor->GetName());
 
     AActor* ProjectileOwner = GetOwner();
     if (!ProjectileOwner) return;
@@ -72,6 +69,7 @@ void ABullet::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse
     Destroy();
 }
 
+// function that prevents collision of owner with bullet when fired while moving forward
 void ABullet::OwnerCollisionPrevention()
 {
     AActor* Shooter = GetOwner();

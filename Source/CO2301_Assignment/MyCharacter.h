@@ -13,6 +13,15 @@
 class AGun;
 class ABullet;
 
+UENUM(BlueprintType)
+enum class ELossReason : uint8
+{
+	None UMETA(DisplayName = "None"),
+	Suicide UMETA(DisplayName = "Goodbye, cruel world!"),
+	HealthDepleted UMETA(DisplayName = "YOU DIED"),
+	TimerUp UMETA(DisplayName = "OUT OF TIME")
+};
+
 UCLASS()
 class CO2301_ASSIGNMENT_API AMyCharacter : public ACharacter
 {
@@ -27,8 +36,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABullet> BulletClass;
 
+	UPROPERTY(BlueprintReadWrite)
+	ELossReason LossReason = ELossReason::None;
+
 	UPROPERTY(BlueprintReadOnly)
-	bool IsDead = false;
+	bool GameStart = false;
+	UPROPERTY(BlueprintReadOnly)
+	bool GameEnd = false;
 	UPROPERTY(BlueprintReadOnly)
 	bool IsReloading = false;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -77,7 +91,6 @@ private:
 
 	FTimerHandle JumpCooldown;
 	FTimerHandle ReloadTimer;
-	FTimerHandle DespawnTimer;
 
 	void SetMoveAmount(float Value);
 	void SetRotateAmount(float Value);
@@ -94,5 +107,7 @@ private:
 		AController* EventInstigator, AActor* DamageCauser) override;
 
 	void Death();
-	void Despawn();
+	void Suicide();
+
+	void QuitGame();
 };

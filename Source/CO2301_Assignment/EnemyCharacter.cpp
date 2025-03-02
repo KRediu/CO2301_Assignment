@@ -2,6 +2,7 @@
 
 
 #include "EnemyCharacter.h"
+#include "CO2301_AssignmentGameModeBase.h"
 #include "Bullet.h"
 #include "Gun.h"
 
@@ -38,7 +39,7 @@ void AEnemyCharacter::Tick(float DeltaTime)
 }
 
 void AEnemyCharacter::Fire() {
-	if (BulletClass && !IsDead) { //checks bullet projectile has been set in the editor
+	if (BulletClass && !GameEnd) { //checks bullet projectile has been set in the editor
 		FVector SpawnLocation = EnemyBulletSpawnPoint->GetComponentLocation();
 		FRotator SpawnRotation = EnemyBulletSpawnPoint->GetComponentRotation();
 		ABullet* TempEnemyBullet = GetWorld()->SpawnActor<ABullet>(BulletClass, SpawnLocation, SpawnRotation);
@@ -54,12 +55,15 @@ void AEnemyCharacter::Fire() {
 float AEnemyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 	AController* EventInstigator, AActor* DamageCauser)
 {
-	if (!IsDead) {
+	if (!GameEnd) {
 		UE_LOG(LogTemp, Warning, TEXT("Damage to enemy: %f"), DamageAmount);
 
 		Health -= DamageAmount;
-		if (Health <= 0)
+		if (Health <= 0) 
+		{
+			WinReason = EWinReason::EnemyDeath;
 			AEnemyCharacter::Death();
+		}
 
 		return DamageAmount;
 	}
@@ -68,8 +72,14 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 
 void AEnemyCharacter::Death() 
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enemy slain"));
-	IsDead = true;
+	GameEnd = true;
+
+	ACO2301_AssignmentGameModeBase* GameMode = Cast<ACO2301_AssignmentGameModeBase>(UGameplayStatics::GetGameMode(this)); // pauses end timer to prevent other actions upon loss
+	if (GameMode)
+	{
+		GameMode->GameOver(true);
+	}
+
 	GetWorld()->GetTimerManager().SetTimer(DespawnTimer, this, &AEnemyCharacter::Despawn, 15.0f);
 }
 

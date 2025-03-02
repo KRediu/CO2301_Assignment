@@ -10,6 +10,13 @@
 class AGun;
 class ABullet;
 
+UENUM(BlueprintType)
+enum class EWinReason : uint8
+{
+	None UMETA(DisplayName = "None"),
+	EnemyDeath UMETA(DisplayName = "ENEMY FELLED"),
+};
+
 UCLASS()
 class CO2301_ASSIGNMENT_API AEnemyCharacter : public ACharacter
 {
@@ -24,11 +31,15 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABullet> BulletClass;
 
+	UPROPERTY(BlueprintReadWrite)
+	EWinReason WinReason = EWinReason::None;
+
 	UPROPERTY(BlueprintReadOnly)
-	bool IsDead = false;
+	bool GameEnd = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Health = 100.0f;
 
 	AGun* Gun;
-
 
 protected:
 	// Called when the game starts or when spawned
@@ -45,9 +56,6 @@ private:
 	USkeletalMeshComponent* EnemyGunMesh;
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* EnemyBulletSpawnPoint;
-
-	UPROPERTY(EditAnywhere)
-	float Health = 100.0f;
 
 	FTimerHandle DespawnTimer;
 

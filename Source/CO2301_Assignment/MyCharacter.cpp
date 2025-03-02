@@ -2,6 +2,7 @@
 
 
 #include "MyCharacter.h"
+#include "CO2301_AssignmentGameModeBase.h"
 #include "Bullet.h"
 #include "Gun.h"
 
@@ -59,7 +60,7 @@ void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!IsDead) { // Rotation call using below rotation value functions
+	if (GameStart && !GameEnd) { // Rotation call using below rotation value functions
 		AddControllerPitchInput(DeltaRotationY);
 		AddControllerYawInput(DeltaRotation);
 		
@@ -81,44 +82,46 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("Strafe", this, &AMyCharacter::SetStrafeAmount);
 	PlayerInputComponent->BindAxis("Look Up", this, &AMyCharacter::SetRotateYAmount);
 
-	// Action calls - jump, fire, reload
+	// Action calls - jump, fire, etc.
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMyCharacter::Jump);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMyCharacter::Fire);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AMyCharacter::Reload);
+	PlayerInputComponent->BindAction("Suicide", IE_Pressed, this, &AMyCharacter::Suicide);
+	PlayerInputComponent->BindAction("Quit", IE_Pressed, this, &AMyCharacter::QuitGame);
 }
 
 // Forward/backward movement value update
 void AMyCharacter::SetMoveAmount(float Value)
 {
-	if (!IsDead)
+	if (GameStart && !GameEnd)
 		DeltaLocation = Value * MoveSpeed * GetWorld()->DeltaTimeSeconds;
 }
 
 // Left/right movement value update
 void AMyCharacter::SetStrafeAmount(float Value)
 {
-	if (!IsDead)
+	if (GameStart && !GameEnd)
 		DeltaLocationZ = Value * StrafeSpeed * GetWorld()->DeltaTimeSeconds;
 }
 
 // X-axis rotation value update
 void AMyCharacter::SetRotateAmount(float Value)
 {
-	if (!IsDead)
+	if (GameStart && !GameEnd)
 		DeltaRotation = Value * RotationSpeed * GetWorld()->DeltaTimeSeconds;
 }
 
 // Y-axis rotation value update
 void AMyCharacter::SetRotateYAmount(float Value)
 {
-	if(!IsDead)
+	if(GameStart && !GameEnd)
 		DeltaRotationY = Value * RotationSpeed * GetWorld()->DeltaTimeSeconds;
 }
 
 // Jumping function
 void AMyCharacter::Jump() 
 {
-	if (!IsDead && !IsReloading) { // prevents jump during reload and after death
+	if (GameStart && !GameEnd && !IsReloading) { // prevents jump during reload and after death
 		bPressedJump = true; // built-in variable enabling the character to jump
 		IsJumping = true; // unique bool variable made to limit other actions during air-time
 		GetWorld()->GetTimerManager().SetTimer(JumpCooldown, this, &AMyCharacter::JumpReset, 1.0f); // calls reset function after a timer
@@ -135,7 +138,7 @@ void AMyCharacter::JumpReset()
 // Shooting/bullet spawning function
 void AMyCharacter::Fire()
 {
-	if(Ammo > 0 && !IsReloading && !IsDead && !IsJumping){ // can't shoot with no ammo and while reloading, jumping or dead
+	if(Ammo > 0 && !IsReloading && GameStart && !GameEnd && !IsJumping){ // can't shoot with no ammo and while reloading, jumping or dead
 		if (BulletClass) { // checks bullet projectile has been set in the editor
 
 			FVector SpawnLocation = BulletSpawnPoint->GetComponentLocation();
@@ -157,7 +160,7 @@ void AMyCharacter::Fire()
 
 void AMyCharacter::Reload() 
 {
-	if (!IsReloading && !IsDead && !IsJumping) {
+	if (!IsReloading && GameStart && !GameEnd && !IsJumping) {
 		UE_LOG(LogTemp, Warning, TEXT("Reloading!"));
 		IsReloading = true;
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AMyCharacter::ReloadReset, 3.17f);
@@ -172,32 +175,49 @@ void AMyCharacter::ReloadReset() {
 float AMyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 	AController* EventInstigator, AActor* DamageCauser)
 {
-	if (!IsDead) {
+	if (GameStart && !GameEnd) {
 		UE_LOG(LogTemp, Warning, TEXT("Damage to player: %f"), DamageAmount);
 
 		Health -= DamageAmount;
-		if (Health <= 0)
-			AMyCharacter::Death();
+		if (Health <= 0) 
+		{
+			LossReason = ELossReason::HealthDepleted;
+			Death();
+		}
 
 		return DamageAmount;
 	}
 	return 0;
 }
 
+// Function simulating death
 void AMyCharacter::Death() 
 {
 	UE_LOG(LogTemp, Warning, TEXT("You have been slain"));
-	IsDead = true;
-	SpringArm->bUsePawnControlRotation = false;
+
+	GameEnd = true; // enables game end condition
+
+	SpringArm->bUsePawnControlRotation = false; // sets the camera in a top view (gta reference, but I can't be bothered to do the slow turning)
 	SpringArm->SetRelativeLocation(FVector(-80.0f, 0.0f, 70.0f));
 	SpringArm->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
-	GetWorld()->GetTimerManager().SetTimer(DespawnTimer, this, &AMyCharacter::Despawn, 15.0f);
+
+	ACO2301_AssignmentGameModeBase* GameMode = Cast<ACO2301_AssignmentGameModeBase>(UGameplayStatics::GetGameMode(this)); // pauses end timer to prevent other actions upon loss
+	if (GameMode)
+	{
+		GameMode->GameOver(false);
+	}
 }
 
-void AMyCharacter::Despawn()
+// debug function - kills character immediately
+void AMyCharacter::Suicide() 
 {
-	UE_LOG(LogTemp, Warning, TEXT("Player despawned"));
-	CharMesh->SetAnimInstanceClass(nullptr);
-	Destroy();
-	Gun->Destroy();
+	Health = 0;
+	LossReason = ELossReason::Suicide;
+	Death();
+}
+
+
+void AMyCharacter::QuitGame()
+{
+	UKismetSystemLibrary::QuitGame(this, GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 }

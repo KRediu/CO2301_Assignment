@@ -19,7 +19,10 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		DebugGame Editor|Win64 = DebugGame Editor|Win64
+		DebugGame|Win64 = DebugGame|Win64
 		Development Editor|Win64 = Development Editor|Win64
+		Development|Win64 = Development|Win64
+		Shipping|Win64 = Shipping|Win64
 	EndGlobalSection
 	# UnrealVS Section
 	GlobalSection(ddbf523f-7eb6-4887-bd51-85a714ff87eb) = preSolution
@@ -27,11 +30,20 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{2B8ED57E-8D1F-3440-AF93-B5DDC1CC3E9F}.DebugGame Editor|Win64.ActiveCfg = BuiltWithUnrealBuildTool|Win64
+		{2B8ED57E-8D1F-3440-AF93-B5DDC1CC3E9F}.DebugGame|Win64.ActiveCfg = BuiltWithUnrealBuildTool|Win64
 		{2B8ED57E-8D1F-3440-AF93-B5DDC1CC3E9F}.Development Editor|Win64.ActiveCfg = BuiltWithUnrealBuildTool|Win64
+		{2B8ED57E-8D1F-3440-AF93-B5DDC1CC3E9F}.Development|Win64.ActiveCfg = BuiltWithUnrealBuildTool|Win64
+		{2B8ED57E-8D1F-3440-AF93-B5DDC1CC3E9F}.Shipping|Win64.ActiveCfg = BuiltWithUnrealBuildTool|Win64
 		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.DebugGame Editor|Win64.ActiveCfg = DebugGame_Editor|x64
 		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.DebugGame Editor|Win64.Build.0 = DebugGame_Editor|x64
+		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.DebugGame|Win64.ActiveCfg = DebugGame|x64
+		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.DebugGame|Win64.Build.0 = DebugGame|x64
 		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.Development Editor|Win64.ActiveCfg = Development_Editor|x64
 		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.Development Editor|Win64.Build.0 = Development_Editor|x64
+		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.Development|Win64.ActiveCfg = Development|x64
+		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.Development|Win64.Build.0 = Development|x64
+		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.Shipping|Win64.ActiveCfg = Shipping|x64
+		{FAC7F6E2-4C75-32FD-88AD-5084FBD9E8CE}.Shipping|Win64.Build.0 = Shipping|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

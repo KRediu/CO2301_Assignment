@@ -47,11 +47,6 @@ void ABullet::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse
         UDamageType::StaticClass()
     );
 
-    // Check if actor is a character and apply impulse force
-    ACharacter* HitCharacter = Cast<ACharacter>(OtherActor);
-    FVector HitDirection = (HitCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-    HitCharacter->GetCharacterMovement()->AddImpulse(HitDirection * 500.0f, true);
-
     Destroy(); // destroy bullet after damage application
 }
 

@@ -7,9 +7,11 @@
 #include "GameFramework/Character.h"
 #include "EnemyCharacter.generated.h"
 
+// subclass forward declarations
 class AGun;
 class ABullet;
 
+// enum class for win reason
 UENUM(BlueprintType)
 enum class EWinReason : uint8
 {
@@ -23,17 +25,19 @@ class CO2301_ASSIGNMENT_API AEnemyCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AEnemyCharacter();
 
+	// subclasses
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AGun> GunClass;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABullet> BulletClass;
 
+	// win reason
 	UPROPERTY(BlueprintReadWrite)
 	EWinReason WinReason = EWinReason::None;
 
+	// actor variables
 	UPROPERTY(BlueprintReadOnly)
 	bool GameEnd = false;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -41,15 +45,17 @@ public:
 
 	AGun* Gun;
 
+	// fire function
+	void Fire();
+
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	// meshes and components
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* EnemyMesh;
 	UPROPERTY(EditAnywhere)
@@ -57,13 +63,20 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* EnemyBulletSpawnPoint;
 
+	// sounds
+	UPROPERTY(EditAnywhere)
+	USoundBase* shootSound;
+	UPROPERTY(EditAnywhere)
+	USoundBase* deathSound;
+
+	// despawn timer
 	FTimerHandle DespawnTimer;
 
-	void Fire();
-
+	// damage functions
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 		AController* EventInstigator, AActor* DamageCauser) override;
 	
+	// death functions
 	void Death();
 	void Despawn();
 };

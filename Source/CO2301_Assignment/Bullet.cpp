@@ -1,20 +1,21 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Bullet.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ABullet::ABullet()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+    // create bullet mesh and appropriate collision/physics
 	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bullet Mesh"));
 	BulletMesh->SetupAttachment(RootComponent);
-    
     BulletMesh->SetSimulatePhysics(false); // Disable physics simulation - prevents bouncing and phasing through walls
 	BulletMesh->SetNotifyRigidBodyCollision(true);
     BulletMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     BulletMesh->SetCollisionResponseToAllChannels(ECR_Block); // Blocks all collisions
 
+    // create projectile component
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Component"));
 	ProjectileMovement->MaxSpeed = MovementSpeed;
 	ProjectileMovement->InitialSpeed = MovementSpeed;
@@ -29,17 +30,15 @@ void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	OnActorHit.AddDynamic(this, &ABullet::OnHit);
+	OnActorHit.AddDynamic(this, &ABullet::OnHit); // apply delegate function on hit
 }
 
 void ABullet::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse,
-	const FHitResult& Hit) {
-    if (!OtherActor || OtherActor == this) return;
+	const FHitResult& Hit) { // damage actor on hit
 
-    AActor* ProjectileOwner = GetOwner();
-    if (!ProjectileOwner) return;
+    AActor* ProjectileOwner = GetOwner(); // get bullet owner
 
-    // Apply standard damage to all actors that support it
+    // apply damage to all actors that support it
     UGameplayStatics::ApplyDamage(
         OtherActor,
         10.0f,
@@ -48,35 +47,17 @@ void ABullet::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse
         UDamageType::StaticClass()
     );
 
-    // Check if the hit actor has a destructible component
-    //if (UGeometryCollectionComponent* ChaosComponent = OtherActor->FindComponentByClass<UGeometryCollectionComponent>()) {
-    //    FVector HitLocation = Hit.ImpactPoint;
-    //    FVector HitDirection = Hit.ImpactNormal;
+    // Check if actor is a character and apply impulse force
+    ACharacter* HitCharacter = Cast<ACharacter>(OtherActor);
+    FVector HitDirection = (HitCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+    HitCharacter->GetCharacterMovement()->AddImpulse(HitDirection * 500.0f, true);
 
-    //    // Apply a radial impulse to break Chaos destructible meshes
-    //    ChaosComponent->AddRadialImpulse(HitLocation, 500.0f, 1000.0f, ERadialImpulseFalloff::RIF_Linear, true);
-
-    //    UE_LOG(LogTemp, Warning, TEXT("Chaos destructible mesh hit!"));
-    //}
-
-    //if (OtherActor->IsA(AStaticMeshActor::StaticClass())) {
-    //    // Destroy the mesh actor (it'll die immediately on hit)
-    //    OtherActor->Destroy();
-    //    UE_LOG(LogTemp, Warning, TEXT("Mesh destroyed!"));
-    //}
-
-    // Destroy the bullet after hit
-    Destroy();
+    Destroy(); // destroy bullet after damage application
 }
 
 // function that prevents collision of owner with bullet when fired while moving forward
 void ABullet::OwnerCollisionPrevention()
 {
     AActor* Shooter = GetOwner();
-    if (Shooter) {
-        if (BulletMesh) {
-            // Ignore collisions with the actor that shot the bullet
-            BulletMesh->IgnoreActorWhenMoving(Shooter, true);
-        }
-    }
+    BulletMesh->IgnoreActorWhenMoving(Shooter, true);
 }

@@ -16,19 +16,13 @@ class CO2301_ASSIGNMENT_API AEnemyAIController : public AAIController
 	GENERATED_BODY()
 
 public:
-	//void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 
 	UPROPERTY(EditAnywhere)
 	class UBehaviorTree* BT_PatrolMode;
 
+	void GameFinish();
+
 protected:
 	virtual void BeginPlay() override;
 
-private:
-	/*UPROPERTY()
-	TArray<AActor*> Waypoints;
-
-	AActor* ChooseWaypoint();
-
-	void RandomPatrol();*/
 };

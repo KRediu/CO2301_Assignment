@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -18,6 +16,7 @@ public:
 	// Sets default values for this actor's properties
 	ABullet();
 
+	// collision prevention func
 	UFUNCTION()
 	void OwnerCollisionPrevention();
 
@@ -26,14 +25,17 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	// bullet mesh and movement
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* BulletMesh;
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovement;
 
+	// bullet speed
 	UPROPERTY(EditAnywhere)
-	float MovementSpeed = 5000.0f;
+	float MovementSpeed = 3000.0f;
 
+	//hit function
 	UFUNCTION()
 	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse,
 		const FHitResult& Hit);

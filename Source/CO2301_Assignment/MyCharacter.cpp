@@ -6,33 +6,36 @@
 #include "Bullet.h"
 #include "Gun.h"
 
-// Sets default values
 AMyCharacter::AMyCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// create player mesh
 	CharMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Char Mesh"));
 	CharMesh->SetupAttachment(RootComponent);
 
+	// create spring arm
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraAttachmentArm"));
 	SpringArm->SetupAttachment(CharMesh);
 	SpringArm->SetRelativeLocation(FVector(0.0f, 90.0f, 40.0f));
 	SpringArm->SetRelativeRotation(FRotator(0.f, 0.f, 0.f));
 	SpringArm->TargetArmLength = 150.0f;
 	SpringArm->bUsePawnControlRotation = true;
-
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
+	// create camera
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 	Camera->bUsePawnControlRotation = false;
 
+	// create bullet spawnpoint
 	BulletSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Bullet"));
 	BulletSpawnPoint->SetupAttachment(CharMesh);
 	BulletSpawnPoint->SetRelativeLocation(FVector(60.0f, 20.0f, 24.0f));
 
+	// autopossess player on launch
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
 
@@ -41,18 +44,15 @@ void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// camera view limitations on y axis
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (PlayerController)
-	{
-		PlayerController->PlayerCameraManager->ViewPitchMin = -40.0f; // Look down limit
-		PlayerController->PlayerCameraManager->ViewPitchMax = 40.0f;  // Look up limit
-	}
+	PlayerController->PlayerCameraManager->ViewPitchMin = -40.0f; // Look down limit
+	PlayerController->PlayerCameraManager->ViewPitchMax = 40.0f;  // Look up limit
 
+	// spawn gun, attach to actor, prevent collisions
 	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
-	if (Gun) {
-		Gun->AttachToCharacter(this);
-		Gun->SetActorEnableCollision(false);
-	}
+	Gun->AttachToCharacter(this);
+	Gun->SetActorEnableCollision(false);
 }
 
 // Called every frame
@@ -149,25 +149,21 @@ void AMyCharacter::Fire()
 			TempBullet->OwnerCollisionPrevention(); // prevents collision with owner
 			TempBullet->SetActorRelativeScale3D(FVector(0.075f, 0.075f, 0.075f)); // scales shape to bullet size
 
-			/*UGameplayStatics::PlaySound2D(GetWorld(), thunk);*/
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), shootSound, GetActorLocation());
 		}
 		Ammo--;
-		UE_LOG(LogTemp, Warning, TEXT("Firing!"))
 	}
-	else
-		UE_LOG(LogTemp, Warning, TEXT("Out of Ammo - Reload!"))
 }
 
-void AMyCharacter::Reload() 
+void AMyCharacter::Reload() // player reload
 {
-	if (!IsReloading && GameStart && !GameEnd && !IsJumping) {
-		UE_LOG(LogTemp, Warning, TEXT("Reloading!"));
-		IsReloading = true;
-		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AMyCharacter::ReloadReset, 3.17f);
+	if (!IsReloading && GameStart && !GameEnd && !IsJumping) { // prevented by other actions/states
+		IsReloading = true; // prevents other actions/states
+		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AMyCharacter::ReloadReset, 3.17f); // call reload finish after a timer
 	}
 }
 
-void AMyCharacter::ReloadReset() {
+void AMyCharacter::ReloadReset() { // refill player ammo and finish process
 	Ammo = InitialAmmo;
 	IsReloading = false;
 }
@@ -175,12 +171,13 @@ void AMyCharacter::ReloadReset() {
 float AMyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 	AController* EventInstigator, AActor* DamageCauser)
 {
-	if (GameStart && !GameEnd) {
+	if (GameStart && !GameEnd) { // applies only if game is active
 		UE_LOG(LogTemp, Warning, TEXT("Damage to player: %f"), DamageAmount);
 
 		Health -= DamageAmount;
 		if (Health <= 0) 
 		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), deathSound, GetActorLocation());
 			LossReason = ELossReason::HealthDepleted;
 			Death();
 		}
@@ -193,31 +190,27 @@ float AMyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& Da
 // Function simulating death
 void AMyCharacter::Death() 
 {
-	UE_LOG(LogTemp, Warning, TEXT("You have been slain"));
-
 	GameEnd = true; // enables game end condition
 
-	SpringArm->bUsePawnControlRotation = false; // sets the camera in a top view (gta reference, but I can't be bothered to do the slow turning)
+	SpringArm->bUsePawnControlRotation = false; // sets the camera in a top view (gta style, but I can't be bothered to do the slow turning)
 	SpringArm->SetRelativeLocation(FVector(-80.0f, 0.0f, 70.0f));
 	SpringArm->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
 
 	ACO2301_AssignmentGameModeBase* GameMode = Cast<ACO2301_AssignmentGameModeBase>(UGameplayStatics::GetGameMode(this)); // pauses end timer to prevent other actions upon loss
-	if (GameMode)
-	{
-		GameMode->GameOver(false);
-	}
+	GameMode->GameOver(false); // call game end function
 }
 
 // debug function - kills character immediately
 void AMyCharacter::Suicide() 
 {
 	Health = 0;
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), deathSound, GetActorLocation());
 	LossReason = ELossReason::Suicide;
 	Death();
 }
 
 
-void AMyCharacter::QuitGame()
+void AMyCharacter::QuitGame() // quit with esc
 {
 	UKismetSystemLibrary::QuitGame(this, GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 }
